@@ -1,0 +1,220 @@
+{% load static %}
+
+{% block content %}
+<div class="menu-header-bar">
+    <a href="/" class="menu-header-link">Главная</a>
+    <a href="/menu" class="menu-header-link active">Меню</a>
+</div>
+
+<div class="wrapper">
+    <section class="gallery page-section" id="menu">
+        <div class="container">
+            <div class="heading">
+                <h2>Наше Меню</h2>
+                <h3>Специальные блюда по выгодной цене</h3>
+            </div>
+            <ul class="grid menu-gallery">
+                {% for item in menu_items %}
+                <li>
+                    <figure>
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}" />
+                        <figcaption>
+                            <h3>{{ item.name }}</h3>
+                            <p>{{ item.description }}</p>
+                            <span class="price">{{ item.price }} ₽</span>
+                        </figcaption>
+                    </figure>
+                </li>
+                {% empty %}
+                <li>
+                    <p>Блюда пока не добавлены</p>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
+</div>
+<section class="menu2 page-section" id="menu2">
+    <div class="container">
+         <div class="heading">			
+        <h2>Основное меню</h2>			
+      </div>
+      
+      <div class="content">
+         <img class=menu src="{% static 'img/menu/0.jpg' %}" alt="0">
+         <img class=menu src="{% static 'img/menu/1.jpg' %}" alt="1">
+      </div> 	
+    </div>
+    </section>
+
+<style>
+.menu-header-bar {
+    width: 100%;
+    background: #f39c12;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+}
+.menu-header-link {
+    color: #fff;
+    padding: 10px 18px;
+    font-size: 16px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+    margin: 0;
+    border-radius: 0;
+    background: transparent;
+    text-align: center;
+}
+.menu-header-link.active,
+.menu-header-link:hover,
+.menu-header-link:focus {
+    background: #d68910;
+    color: #fff;
+}
+.menu-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.menu-gallery li {
+    width: 280px;
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+.menu-gallery figure {
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    transition: box-shadow 0.2s;
+}
+.menu-gallery figure:hover {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+.menu-gallery img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+}
+.menu-gallery figcaption {
+    padding: 15px;
+    text-align: center;
+    background: #fff;
+}
+.menu-gallery h3 {
+    font-size: 1.2em;
+    color: #222;
+    margin: 0 0 8px 0;
+    font-weight: 600;
+}
+.menu-gallery p {
+    font-size: 0.9em;
+    color: #555;
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+}
+.menu-gallery .price {
+    font-weight: bold;
+    color: #28a745;
+    font-size: 1.1em;
+    display: block;
+}
+.heading {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.heading h2 {
+    color: #F39C12;
+    font-size: 2.2em;
+    margin-bottom: 20px;
+}
+.heading h3 {
+    color: #555;
+    font-size: 1.1em;
+    margin-bottom: 40px;
+}
+
+.menu-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.menu-title {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    justify-items: center;
+    margin: 0 auto;
+    max-width: 1200px;
+}
+
+.menu-item {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    width: 100%;
+    max-width: 350px;
+    text-align: center;
+}
+
+.menu-item:hover {
+    transform: translateY(-5px);
+}
+
+.menu-item img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+}
+
+.menu-item-content {
+    padding: 20px;
+}
+
+.menu-item h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 1.5em;
+}
+
+.menu-item p {
+    color: #666;
+    margin: 0 0 15px 0;
+    line-height: 1.6;
+}
+
+.menu-item .price {
+    font-size: 1.2em;
+    color: #e74c3c;
+    font-weight: bold;
+}
+.content .menu{
+  width: 75%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+{% endblock %} 

@@ -1,0 +1,147 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="no-js" lang="ru">
+<head>
+    <meta charset="UTF-8"/>
+    <title>{% block title %}Легенда - Ресторан русской кухни{% endblock %}</title>
+    <meta name="description" content="Ресторан русской кухни Легенда">
+    <meta name="author" content="webthemez">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="{% static 'css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'css/font-awesome.css' %}">
+    <link rel="stylesheet" href="{% static 'css/animate.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+    <link href='https://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    
+    {% block extra_css %}{% endblock %}
+
+    <style>
+        .auth-buttons {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .auth-buttons .btn {
+            margin-left: 5px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid #fff;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+        .auth-buttons .btn:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #000;
+        }
+        .user-info {
+            color: #fff;
+            padding: 8px 15px;
+            display: inline-block;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        .messages {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 10000;
+            min-width: 300px;
+        }
+        .message {
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            animation: slideIn 0.5s ease-out;
+        }
+        .message.success {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .message.info {
+            background-color: #cce5ff;
+            border-color: #b8daff;
+            color: #004085;
+        }
+        .message.warning {
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+            color: #856404;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">Легенда</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/menu">Меню</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/reservation">Бронирование</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="message {{ message.tags }}">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+
+    <script src="{% static 'js/jquery.js' %}"></script>
+    <script src="{% static 'js/bootstrap.js' %}"></script>
+    
+    <script>
+        $(document).ready(function() {
+            setTimeout(function() {
+                $('.messages').fadeOut('slow');
+            }, 5000);
+
+            $('.message .close').click(function() {
+                $(this).closest('.message').fadeOut('slow');
+            });
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
