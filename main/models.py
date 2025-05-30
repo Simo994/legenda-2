@@ -65,3 +65,17 @@ class MenuPhoto(models.Model):
 
     def __str__(self):
         return self.description or f"Фото меню {self.id}"
+
+class News(models.Model):
+    title = models.CharField(max_length=200, verbose_name='Заголовок')
+    content = models.TextField(verbose_name='Содержание')
+    date = models.DateTimeField(auto_now_add=True, verbose_name='Дата публикации')
+    image = models.ImageField(upload_to='news/', null=True, blank=True, verbose_name='Изображение')
+
+    class Meta:
+        verbose_name = 'Новость'
+        verbose_name_plural = 'Новости'
+        ordering = ['-date']
+
+    def __str__(self):
+        return self.title

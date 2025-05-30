@@ -7,7 +7,7 @@ from .forms import ReservationForm, UserRegisterForm, FeedbackForm
 import logging
 import json
 from django.contrib.auth.forms import UserCreationForm
-from .models import MenuItem, MenuPhoto, Reservation
+from .models import MenuItem, MenuPhoto, Reservation, News
 from datetime import date
 
 logger = logging.getLogger(__name__)
@@ -108,3 +108,11 @@ def menu_view(request):
     menu_items = MenuItem.objects.filter(is_active=True)
     menu_photos = MenuPhoto.objects.all()
     return render(request, 'menu.html', {'menu_items': menu_items, 'menu_photos': menu_photos})
+
+def news_list(request):
+    news = News.objects.all()
+    return render(request, 'news.html', {'news': news})
+
+def news_detail(request, news_id):
+    news_item = get_object_or_404(News, id=news_id)
+    return render(request, 'news_detail.html', {'news_item': news_item})
