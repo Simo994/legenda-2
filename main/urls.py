@@ -9,6 +9,7 @@ urlpatterns = [
     # Бронирование
     path('reservation/', views.reservation, name='reservation'),
     path('reservation/success/', views.reservation_success, name='reservation_success'),
+    path('reservation/delete/<int:reservation_id>/', views.delete_reservation, name='delete_reservation'),
     
     # Регистрация
     path('register/', views.register, name='register'),

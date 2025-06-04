@@ -22,7 +22,7 @@ class Reservation(models.Model):
 
 class Feedback(models.Model):
     name = models.CharField('Имя', max_length=100)
-    email = models.EmailField('Email')
+    phone = models.CharField('Телефон', max_length=20)
     subject = models.CharField('Тема', max_length=200, default='Обратная связь')
     message = models.TextField('Сообщение')
     created_at = models.DateTimeField('Дата отправки', auto_now_add=True)

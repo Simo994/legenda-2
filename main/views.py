@@ -67,7 +67,7 @@ def reservation(request):
                 reservation = form.save(commit=False)
                 reservation.save()
                 messages.success(request, 'Бронирование успешно создано!')
-                return redirect('reservation')
+                return redirect('reservation_success')
             except Exception as e:
                 logger.error(f"Ошибка при сохранении бронирования: {str(e)}")
                 messages.error(request, 'Произошла ошибка при создании бронирования. Пожалуйста, попробуйте позже.')

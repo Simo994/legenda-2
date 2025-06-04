@@ -13,9 +13,9 @@ class ReservationAdmin(admin.ModelAdmin):
 
 @admin.register(Feedback)
 class FeedbackAdmin(admin.ModelAdmin):
-    list_display = ('name', 'email', 'subject', 'created_at', 'is_read')
+    list_display = ('name', 'phone', 'subject', 'created_at', 'is_read')
     list_filter = ('created_at', 'is_read')
-    search_fields = ('name', 'email', 'subject', 'message')
+    search_fields = ('name', 'phone', 'subject', 'message')
     readonly_fields = ('created_at',)
     ordering = ('-created_at',)
     

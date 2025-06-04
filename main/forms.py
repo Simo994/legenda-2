@@ -76,16 +76,16 @@ class ReservationForm(forms.ModelForm):
 class FeedbackForm(forms.ModelForm):
     class Meta:
         model = Feedback
-        fields = ['name', 'email', 'subject', 'message']
+        fields = ['name', 'phone', 'subject', 'message']
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Ваше имя',
                 'required': True
             }),
-            'email': forms.EmailInput(attrs={
+            'phone': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Ваш email адрес',
+                'placeholder': 'Ваш телефон',
                 'required': True
             }),
             'subject': forms.TextInput(attrs={
