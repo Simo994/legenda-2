@@ -6,10 +6,19 @@ from django.utils import timezone
 
 @admin.register(Reservation)
 class ReservationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'phone', 'email', 'date', 'time', 'guests', 'created_at')
-    list_filter = ('date', 'created_at')
+    list_display = ('name', 'phone', 'email', 'date', 'time', 'guests', 'status', 'created_at')
+    list_filter = ('status', 'date', 'created_at')
     search_fields = ('name', 'phone', 'email')
     ordering = ('-created_at',)
+    actions = ['accept_reservations', 'reject_reservations']
+    
+    def accept_reservations(self, request, queryset):
+        queryset.update(status='accepted')
+    accept_reservations.short_description = "Принять выбранные бронирования"
+    
+    def reject_reservations(self, request, queryset):
+        queryset.update(status='rejected')
+    reject_reservations.short_description = "Отклонить выбранные бронирования"
 
 @admin.register(Feedback)
 class FeedbackAdmin(admin.ModelAdmin):

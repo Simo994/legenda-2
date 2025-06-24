@@ -3,6 +3,8 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
+from django.core.mail import send_mail
+from django.conf import settings
 from .forms import ReservationForm, UserRegisterForm, FeedbackForm
 import logging
 import json
@@ -66,12 +68,43 @@ def reservation(request):
             try:
                 reservation = form.save(commit=False)
                 reservation.save()
+                logger.info(f"Бронирование сохранено: ID={reservation.id}")
+                
+                # Отправка уведомления администратору
+                subject = 'Новое бронирование'
+                message = f'''
+                Новое бронирование:
+                
+                Имя: {reservation.name}
+                Email: {reservation.email}
+                Телефон: {reservation.phone}
+                Дата: {reservation.date}
+                Время: {reservation.time}
+                Количество гостей: {reservation.guests}
+                Сообщение: {reservation.message or 'Нет сообщения'}
+                '''
+                
+                try:
+                    logger.info(f"Попытка отправки уведомления о бронировании {reservation.id}")
+                    send_mail(
+                        subject,
+                        message,
+                        settings.DEFAULT_FROM_EMAIL,
+                        [settings.ADMIN_EMAIL],
+                        fail_silently=False,
+                    )
+                    logger.info(f"Уведомление о бронировании {reservation.id} успешно отправлено на {settings.ADMIN_EMAIL}")
+                except Exception as e:
+                    logger.error(f"Ошибка при отправке уведомления о бронировании {reservation.id}: {str(e)}")
+                    # Не прерываем выполнение, даже если отправка не удалась
+                
                 messages.success(request, 'Бронирование успешно создано!')
                 return redirect('reservation_success')
             except Exception as e:
                 logger.error(f"Ошибка при сохранении бронирования: {str(e)}")
                 messages.error(request, 'Произошла ошибка при создании бронирования. Пожалуйста, попробуйте позже.')
         else:
+            logger.warning(f"Ошибки валидации формы бронирования: {form.errors}")
             for field, errors in form.errors.items():
                 for error in errors:
                     messages.error(request, f'Ошибка в поле {field}: {error}')
@@ -116,3 +149,17 @@ def news_list(request):
 def news_detail(request, news_id):
     news_item = get_object_or_404(News, id=news_id)
     return render(request, 'news_detail.html', {'news_item': news_item})
+
+def test_email(request):
+    try:
+        send_mail(
+            'Тестовое письмо',
+            'Это тестовое письмо для проверки настроек email.',
+            settings.DEFAULT_FROM_EMAIL,
+            [settings.ADMIN_EMAIL],
+            fail_silently=False,
+        )
+        return JsonResponse({'status': 'success', 'message': 'Тестовое письмо отправлено'})
+    except Exception as e:
+        logger.error(f"Ошибка при отправке тестового письма: {str(e)}")
+        return JsonResponse({'status': 'error', 'message': str(e)})

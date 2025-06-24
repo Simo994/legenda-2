@@ -1,0 +1,213 @@
+АНАЛИЗ УЯЗВИМОСТЕЙ САЙТА "ЛЕГЕНДА" И СПОСОБЫ ИХ УСТРАНЕНИЯ
+
+1. Защита от XSS (Cross-Site Scripting):
+Найдена уязвимость в форме обратной связи на главной странице:
+- Пользовательский ввод не экранируется перед отображением
+- Отсутствует валидация HTML-тегов в полях формы
+
+Исправление:
+Добавить экранирование данных в представлении home:
+```python
+from django.utils.html import escape
+from django.template.defaultfilters import escape as template_escape
+
+def home(request):
+    try:
+        if request.method == 'POST' and 'feedback_form' in request.POST:
+            form = FeedbackForm(request.POST)
+            if form.is_valid():
+                # Экранирование данных перед сохранением
+                feedback = form.save(commit=False)
+                feedback.name = escape(feedback.name)
+                feedback.subject = escape(feedback.subject)
+                feedback.message = escape(feedback.message)
+                feedback.save()
+                return JsonResponse({'status': 'success'})
+```
+
+2. Защита от CSRF (Cross-Site Request Forgery):
+Найдена уязвимость в JavaScript-коде:
+- AJAX-запросы не всегда включают CSRF-токен
+- Отсутствует проверка CSRF в некоторых формах
+
+Исправление:
+Добавить CSRF-токен во все AJAX-запросы:
+```javascript
+// В static/js/contact.js
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+        }
+    }
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+```
+
+3. Защита от SQL-инъекций и валидация входных данных:
+Найдены уязвимости в формах:
+- Отсутствует строгая валидация входных данных
+- Нет ограничений на длину полей
+- Отсутствует санитизация специальных символов
+
+Исправление:
+Добавить валидацию в формы Django:
+```python
+# В main/forms.py
+from django import forms
+from django.core.validators import RegexValidator
+import re
+
+class FeedbackForm(forms.ModelForm):
+    name = forms.CharField(
+        max_length=100,
+        validators=[
+            RegexValidator(
+                regex=r'^[а-яёa-z\s\-\.]+$',
+                message='Имя может содержать только буквы, пробелы, дефисы и точки'
+            )
+        ],
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Ваше имя',
+            'pattern': '[а-яёa-z\s\-\.]+',
+            'maxlength': '100'
+        })
+    )
+    
+    subject = forms.CharField(
+        max_length=200,
+        validators=[
+            RegexValidator(
+                regex=r'^[а-яёa-z0-9\s\-\.\,\!\?]+$',
+                message='Тема может содержать только буквы, цифры и знаки препинания'
+            )
+        ]
+    )
+    
+    message = forms.CharField(
+        max_length=1000,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 4,
+            'maxlength': '1000'
+        })
+    )
+    
+    def clean_message(self):
+        message = self.cleaned_data['message']
+        # Удаляем потенциально опасные HTML-теги
+        message = re.sub(r'<[^>]*>', '', message)
+        return message
+```
+
+4. Защита от информационного раскрытия:
+Найдены уязвимости в настройках:
+- DEBUG = True в продакшене
+- Открытый SECRET_KEY в коде
+- Подробные сообщения об ошибках
+
+Исправление:
+Обновить настройки безопасности в settings.py:
+```python
+# В legenda/settings.py
+import os
+from pathlib import Path
+
+# Безопасное получение SECRET_KEY
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-vyvw84$c-7i7bk5m5%4k-y=n6k1&pb=uep)j7ovjl1nzx!$!i8')
+
+# Отключить DEBUG в продакшене
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+
+# Настройки безопасности
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# Настройки сессий
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+
+# Ограничение размера загружаемых файлов
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
+```
+
+5. Защита от атак перебора и брутфорса:
+Найдены уязвимости в аутентификации:
+- Отсутствует ограничение попыток входа
+- Нет блокировки аккаунтов после неудачных попыток
+- Отсутствует двухфакторная аутентификация
+
+Исправление:
+Добавить защиту от брутфорса:
+```python
+# В legenda/settings.py
+# Настройки аутентификации
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+# Ограничение попыток входа
+LOGIN_ATTEMPTS_LIMIT = 5
+LOGIN_ATTEMPTS_TIMEOUT = 300  # 5 минут
+
+# В main/views.py добавить декоратор для ограничения попыток входа
+from django.core.cache import cache
+from django.contrib.auth import authenticate, login
+from django.http import HttpResponseForbidden
+
+def login_with_attempts_limit(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        # Проверяем количество попыток
+        cache_key = f'login_attempts_{username}'
+        attempts = cache.get(cache_key, 0)
+        
+        if attempts >= 5:
+            return HttpResponseForbidden('Слишком много неудачных попыток. Попробуйте через 5 минут.')
+        
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            login(request, user)
+            cache.delete(cache_key)  # Сбрасываем счетчик при успешном входе
+            return redirect('home')
+        else:
+            cache.set(cache_key, attempts + 1, 300)  # Увеличиваем счетчик
+            messages.error(request, 'Неверное имя пользователя или пароль.')
+    
+    return render(request, 'registration/login.html')
+```
+
+ДОПОЛНИТЕЛЬНЫЕ РЕКОМЕНДАЦИИ:
+
+1. Регулярно обновлять зависимости Django и других пакетов
+2. Использовать HTTPS в продакшене
+3. Настроить бэкапы базы данных
+4. Мониторить логи на предмет подозрительной активности
+5. Проводить регулярные аудиты безопасности
+6. Использовать WAF (Web Application Firewall)
+7. Настроить rate limiting для API-эндпоинтов
+8. Шифровать чувствительные данные в базе данных 

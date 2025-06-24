@@ -83,9 +83,13 @@
                                 <td>{{ reservation.guests }} чел.</td>
                                 <td>
                                     {% if reservation.date < today %}
-                                    <span class="badge bg-secondary">Прошло</span>
-                                    {% else %}
-                                    <span class="badge bg-success">Активно</span>
+                                        <span class="badge bg-secondary">Прошло</span>
+                                    {% elif reservation.status == 'pending' %}
+                                        <span class="badge bg-warning">Ожидает подтверждения</span>
+                                    {% elif reservation.status == 'accepted' %}
+                                        <span class="badge bg-success">Принято</span>
+                                    {% elif reservation.status == 'rejected' %}
+                                        <span class="badge bg-danger">Отклонено</span>
                                     {% endif %}
                                 </td>
                                 <td>
@@ -228,6 +232,8 @@
         </div>
     </section>
 </div>
+
+{% include 'footer.html' %}
 
 <!-- Модальное окно с политикой конфиденциальности -->
 <div class="modal fade" id="privacyModal" tabindex="-1" role="dialog" aria-labelledby="privacyModalLabel" aria-hidden="true">

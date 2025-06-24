@@ -9,6 +9,7 @@ jQuery(function($) {
 
     new WOW().init();
 
+    // Обработка только ссылок с якорями на той же странице
     $(function() {
         $('a[href*=#]:not([href=#])').click(function() {
             if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
@@ -31,29 +32,49 @@ jQuery(function($) {
 
     });
 
-    $('#main-nav').onePageNav({
-        currentClass: 'active',
-        changeHash: false,
-        scrollSpeed: 950,
-        scrollThreshold: 0.2,
-        filter: '',
-        easing: 'swing',
-        begin: function() {},
-        end: function() {
-            if (!$('#main-nav ul li:first-child').hasClass('active')) {
+    // Простая навигация без onePageNav
+    $(document).ready(function() {
+        // Обработка активного состояния для ссылок с якорями
+        var sections = $('section[id]');
+        var navItems = $('#main-nav a[href*="#"]');
+        
+        $(window).scroll(function() {
+            var current = '';
+            var scrollTop = $(window).scrollTop();
+            
+            sections.each(function() {
+                var sectionTop = $(this).offset().top - 100;
+                if (scrollTop >= sectionTop) {
+                    current = $(this).attr('id');
+                }
+            });
+            
+            navItems.parent().removeClass('active');
+            if (current) {
+                $('#main-nav a[href="#' + current + '"]').parent().addClass('active');
+            }
+            
+            // Добавляем/убираем фон для header
+            if (scrollTop > 50) {
                 $('.header').addClass('addBg');
             } else {
                 $('.header').removeClass('addBg');
             }
-
-        },
-        scrollChange: function($currentListItem) {
-            if (!$('#main-nav ul li:first-child').hasClass('active')) {
-                $('.header').addClass('addBg');
-            } else {
-                $('.header').removeClass('addBg');
+        });
+        
+        // Плавная прокрутка для ссылок с якорями
+        navItems.click(function(e) {
+            var href = $(this).attr('href');
+            if (href.indexOf('#') !== -1) {
+                e.preventDefault();
+                var target = $(href);
+                if (target.length) {
+                    $('html, body').animate({
+                        scrollTop: target.offset().top - 40
+                    }, 950);
+                }
             }
-        }
+        });
     });
 
 });

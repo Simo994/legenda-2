@@ -276,6 +276,7 @@ img {
 	 /* bottom:0; */;
 }
 
+
 .navArea {
 	/*float:right;*/;
 }
@@ -302,17 +303,18 @@ img {
 }
 
 .navbar-toggle {
+  background-color: #d4a112;
   margin-top: 14px;
 }
 
 .navbar-toggle .icon-bar {
-  background: #fff;
+  background: #d4a112;
 }
 
 .nav>li>a:hover, .nav>li>a:focus {
   text-decoration: none;
   background-color: rgb(205, 128, 5);
-  color: #FFFFFF;
+  color: rgb(205, 128, 5);
 }
 
 .nav>li>a {
@@ -354,7 +356,7 @@ img {
 }
 
 .navbar.navbar-inverse.navbar-static-top a {
-  color: #fff;
+  color: rgb(205, 128, 5);
   padding: 31px 16px;
   line-height: 18px;
   text-align: center;

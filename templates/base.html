@@ -15,6 +15,9 @@
 
     <link href='https://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Shantell+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
     
     {% block extra_css %}{% endblock %}
 
@@ -88,6 +91,17 @@
                 opacity: 1;
             }
         }
+        .about-text p {
+            font-family: 'Shantell Sans', cursive;
+            text-indent: 20px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-weight: 500;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            letter-spacing: 0.3px;
+        }
     </style>
 </head>
 <body>
@@ -110,6 +124,28 @@
 
     <script src="{% static 'js/jquery.js' %}"></script>
     <script src="{% static 'js/bootstrap.js' %}"></script>
+    <script src="{% static 'js/modernizr.js' %}"></script>
+    <script src="{% static 'js/jquery-scrolltofixed.js' %}"></script>
+    <script src="{% static 'js/jquery.easing.1.3.js' %}"></script>
+    <script src="{% static 'js/menustick.js' %}"></script> 
+    <script src="{% static 'js/easing.js' %}"></script>
+    <script src="{% static 'js/wow.js' %}"></script>
+    <script src="{% static 'js/smoothscroll.js' %}"></script>
+    <script src="{% static 'js/masonry.js' %}"></script>
+    <script src="{% static 'js/imgloaded.js' %}"></script>
+    <script src="{% static 'js/classie.js' %}"></script>
+    <script src="{% static 'js/colorfinder.js' %}"></script>
+    <script src="{% static 'js/gridscroll.js' %}"></script>
+    <script src="{% static 'js/contact.js' %}"></script>
+    <script src="{% static 'js/custom.js' %}"></script>
+    
+    <script type="text/javascript">
+    jQuery(function($) {
+    $(document).ready( function() {
+        $('.navbar-wrapper').stickUp();
+        });
+    });
+    </script>
     
     <script>
         $(document).ready(function() {
