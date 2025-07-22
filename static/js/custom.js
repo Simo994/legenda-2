@@ -62,15 +62,16 @@ jQuery(function($) {
             }
         });
         
-        // Плавная прокрутка для ссылок с якорями
+        // Плавная прокрутка для ссылок с якорями только если уже на главной
         navItems.click(function(e) {
             var href = $(this).attr('href');
-            if (href.indexOf('#') !== -1) {
+            var hashIndex = href.indexOf('#');
+            if (hashIndex !== -1 && window.location.pathname === "/") {
                 e.preventDefault();
-                var target = $(href);
-                if (target.length) {
+                var target = href.substring(hashIndex); // только #aboutUs
+                if ($(target).length) {
                     $('html, body').animate({
-                        scrollTop: target.offset().top - 40
+                        scrollTop: $(target).offset().top - 40
                     }, 950);
                 }
             }

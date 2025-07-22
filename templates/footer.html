@@ -1,1 +1,110 @@
- 
+{% load static %}
+ <section class="footer" id="footer">
+	<p class="text-center">
+		<a href="#header" class="gototop"><i class="fa fa-angle-double-up fa-2x"></i></a>
+	</p>
+	<div class="container">
+		<div class="footer-info">
+			<div class="working-hours">
+				<h4>Часы работы</h4>
+				<p>Ежедневно с 9:00 до 22:00</p>
+			</div>
+			<div class="contact-info">
+				<h4>Телефон</h4>
+				<p><a href="tel:+79851679997">+7 (985) 167-99-97</a></p>
+			</div>
+		</div>
+		<ul class="social-links">
+			<li><a href="https://www.instagram.com/legenda_oz_?igsh=ZGpkZWtuNjVyb3F4"><i class="fa fa-instagram"></i></a></li>
+			<li><a href="https://vk.com/kafelegendaoz"><i class="fa fa-vk"></i></a></li>
+			<li><a href="https://t.me/legenda_oz"><img src="{% static 'img/telegram.png' %}" alt="Telegram" style="width: 16px; height: 16px; filter: invert(1);"></a></li>
+			<li><a href="https://eda.yandex.ru/restaurant/kafe_legenda_slw9z"><img src="{% static 'img/yandex-eda.png' %}" alt="Яндекс.Еда" style="width: 16px; height: 16px; filter: invert(1);"></a></li> 
+		</ul>
+		<p class="copyright">
+			&copy; 2024 ИП"Спекторова Г.В."
+		</p>
+	</div>
+	</section>
+
+	<style>
+        .footer {
+            background: #222;
+            color: #fff;
+            padding: 20px 0 15px;
+            text-align: center;
+        }
+        
+        .footer-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 15px;
+        }
+        
+        .working-hours, .contact-info {
+            text-align: center;
+        }
+        
+        .footer-info h4 {
+            color: #F39C12;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .footer-info p {
+            color: #fff;
+            margin: 0;
+            font-size: 1em;
+        }
+        
+        .contact-info a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .contact-info a:hover {
+            color: #F39C12;
+        }
+        
+        .social-links {
+            list-style: none;
+            padding: 0;
+            margin: 10px 0;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .social-links li a {
+            color: #fff;
+            font-size: 1.1em;
+            transition: color 0.3s ease;
+        }
+        
+        .social-links li a:hover {
+            color: #F39C12;
+        }
+        
+        .copyright {
+            margin-top: 10px;
+            color: #888;
+            font-size: 0.85em;
+        }
+        
+        .gototop {
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .footer-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .footer {
+                padding: 15px 0 10px;
+            }
+        }
+        </style>

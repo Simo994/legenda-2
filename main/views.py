@@ -9,7 +9,7 @@ from .forms import ReservationForm, UserRegisterForm, FeedbackForm
 import logging
 import json
 from django.contrib.auth.forms import UserCreationForm
-from .models import MenuItem, MenuPhoto, Reservation, News
+from .models import MenuItem, MenuPhoto, Reservation, News, GalleryPhoto
 from datetime import date
 
 logger = logging.getLogger(__name__)
@@ -59,7 +59,7 @@ def register(request):
 @login_required(login_url='login')
 def reservation(request):
     # Получаем все бронирования текущего пользователя
-    user_reservations = Reservation.objects.filter(email=request.user.email).order_by('-date', '-time')
+    user_reservations = Reservation.objects.filter(user=request.user).order_by('-date', '-time')
     today = date.today()
     
     if request.method == 'POST':
@@ -67,6 +67,7 @@ def reservation(request):
         if form.is_valid():
             try:
                 reservation = form.save(commit=False)
+                reservation.user = request.user  # Привязываем к пользователю
                 reservation.save()
                 logger.info(f"Бронирование сохранено: ID={reservation.id}")
                 
@@ -124,9 +125,31 @@ def reservation(request):
 
 @login_required(login_url='login')
 def delete_reservation(request, reservation_id):
-    reservation = get_object_or_404(Reservation, id=reservation_id, email=request.user.email)
+    reservation = get_object_or_404(Reservation, id=reservation_id, user=request.user)
     if request.method == 'POST':
         try:
+            # Если статус был 'accepted', отправляем уведомление админу
+            if reservation.status == 'accepted':
+                subject = 'Бронирование отменено пользователем'
+                message = f'''
+                Пользователь отменил бронирование:
+                Имя: {reservation.name}
+                Email: {reservation.email}
+                Телефон: {reservation.phone}
+                Дата: {reservation.date}
+                Время: {reservation.time}
+                Количество гостей: {reservation.guests}
+                '''
+                try:
+                    send_mail(
+                        subject,
+                        message,
+                        settings.DEFAULT_FROM_EMAIL,
+                        [settings.ADMIN_EMAIL],
+                        fail_silently=False,
+                    )
+                except Exception as e:
+                    logger.error(f"Ошибка при отправке уведомления об отмене бронирования: {str(e)}")
             reservation.delete()
             messages.success(request, 'Бронирование успешно удалено!')
         except Exception as e:
@@ -163,3 +186,19 @@ def test_email(request):
     except Exception as e:
         logger.error(f"Ошибка при отправке тестового письма: {str(e)}")
         return JsonResponse({'status': 'error', 'message': str(e)})
+
+def gallery_view(request):
+    photos_interior = MenuPhoto.objects.filter(category='interior').order_by('-created_at')
+    photos_dish = MenuPhoto.objects.filter(category='dish').order_by('-created_at')
+    return render(request, 'gallery.html', {
+        'photos_interior': photos_interior,
+        'photos_dish': photos_dish,
+    })
+
+def gallery(request):
+    interior_photos = GalleryPhoto.objects.filter(category='interior')
+    dish_photos = GalleryPhoto.objects.filter(category='dish')
+    return render(request, 'gallery.html', {
+        'interior_photos': interior_photos,
+        'dish_photos': dish_photos,
+    })

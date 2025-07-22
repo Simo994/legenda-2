@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Reservation, Feedback, MenuItem, MenuPhoto, News
+from .models import Reservation, Feedback, MenuItem, MenuPhoto, News, GalleryPhoto
 from django.utils import timezone
 
 # Register your models here.
@@ -68,3 +68,8 @@ class NewsAdmin(admin.ModelAdmin):
     list_filter = ('date',)
     search_fields = ('title', 'content')
     date_hierarchy = 'date'
+
+@admin.register(GalleryPhoto)
+class GalleryPhotoAdmin(admin.ModelAdmin):
+    list_display = ('image', 'category', 'description')
+    list_filter = ('category',)

@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -9,6 +10,7 @@ class Reservation(models.Model):
         ('rejected', 'Отклонено'),
     ]
     
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Пользователь')
     name = models.CharField('Имя', max_length=100)
     phone = models.CharField('Телефон', max_length=20)
     email = models.EmailField('Email')
@@ -61,8 +63,13 @@ class MenuItem(models.Model):
         return self.name
 
 class MenuPhoto(models.Model):
+    CATEGORY_CHOICES = [
+        ('interior', 'Интерьер'),
+        ('dish', 'Блюда'),
+    ]
     image = models.ImageField(upload_to='menu_photos/', verbose_name='Фото меню')
     description = models.CharField(max_length=255, blank=True, verbose_name='Описание (необязательно)')
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='dish', verbose_name='Категория')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата добавления')
 
     class Meta:
@@ -76,6 +83,7 @@ class MenuPhoto(models.Model):
 class News(models.Model):
     title = models.CharField(max_length=200, verbose_name='Заголовок')
     content = models.TextField(verbose_name='Содержание')
+    detail_content = models.TextField(verbose_name='Детальное описание', blank=True, null=True)
     date = models.DateTimeField(auto_now_add=True, verbose_name='Дата публикации')
     image = models.ImageField(upload_to='news/', null=True, blank=True, verbose_name='Изображение')
 
@@ -86,3 +94,15 @@ class News(models.Model):
 
     def __str__(self):
         return self.title
+
+class GalleryPhoto(models.Model):
+    CATEGORY_CHOICES = [
+        ('interior', 'Интерьер'),
+        ('dish', 'Блюда'),
+    ]
+    image = models.ImageField(upload_to='gallery/')
+    description = models.CharField(max_length=255, blank=True)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+
+    def __str__(self):
+        return f"{self.get_category_display()} - {self.description or self.image.name}"

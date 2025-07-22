@@ -158,6 +158,24 @@
             });
         });
     </script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if (window.location.pathname === "/" && window.location.hash) {
+            var hash = window.location.hash.substring(1);
+            console.log("Пробую прокрутить к якорю:", hash);
+            function scrollToAnchor() {
+                var el = document.getElementById(hash);
+                if (el) {
+                    console.log("Нашёл якорь, скроллю!");
+                    el.scrollIntoView({behavior: "smooth"});
+                } else {
+                    setTimeout(scrollToAnchor, 100);
+                }
+            }
+            scrollToAnchor();
+        }
+    });
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

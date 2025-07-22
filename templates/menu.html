@@ -21,13 +21,13 @@
                 </div>
                 <div id="main-nav" class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li><a href="{% url 'home' %}" class="scroll-link">Главная</a></li>
-                        <li><a href="{% url 'home' %}#aboutUs" class="scroll-link">О Нас</a></li>
-                        <li><a href="{% url 'home' %}#service" class="scroll-link">Услуги</a></li>
-                        
-                        <li><a href="{% url 'news' %}" class="menu-header-link">Новости</a></li>
-                        <li><a href="{% url 'home' %}#contact" class="scroll-link">Контакты</a></li>
-                        <li><a href="{% url 'reservation' %}" class="reservation-link">Забронировать столик</a></li>
+                        <li><a href="{% url 'home' %}#header" class="scroll-link">Главная</a></li>
+              <li><a href="{% url 'news' %}" class="menu-header-link">Новости</a></li>
+			  <li><a href="{% url 'menu' %}" class="menu-header-link">Меню</a></li>
+			  <li><a href="{% url 'gallery' %}" class="menu-header-link">Галерея</a></li>
+			  <li><a href="{% url 'home' %}#service" class="scroll-link">Услуги</a></li>
+			  <li><a href="{% url 'home' %}#footer" class="scroll-link">Контакты</a></li>
+			  <li><a href="{% url 'reservation' %}" class="reservation-link">Забронировать столик</a></li>
                         {% if user.is_authenticated %}
                             <li><span class="nav-text">Привет, {{ user.username }}!</span></li>
                             <li><a href="{% url 'logout' %}" class="auth-link">Выйти</a></li>
@@ -76,8 +76,11 @@
       </div>
       
       <div class="content">
-         <img class=menu src="{% static 'img/menu/0.jpg' %}" alt="0">
-         <img class=menu src="{% static 'img/menu/1.jpg' %}" alt="1">
+        {% for photo in menu_photos %}
+            <img class="menu" src="{{ photo.image.url }}" alt="{{ photo.description }}">
+        {% empty %}
+            <p>Фотографии пока не добавлены</p>
+        {% endfor %}
       </div> 	
     </div>
     </section>
