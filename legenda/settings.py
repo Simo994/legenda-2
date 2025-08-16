@@ -10,6 +10,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+# Обход DNS проблем в Windows
+import socket
+try:
+    # Правильная замена функции getfqdn
+    def getfqdn_fix(host=None):
+        return 'localhost'
+    socket.getfqdn = getfqdn_fix
+except:
+    pass
+
 from pathlib import Path
 import os
 
@@ -159,16 +169,25 @@ LOGGING = {
         'console': {
             'class': 'logging.StreamHandler',
         },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'django.log',
+        },
     },
     'root': {
-        'handlers': ['console'],
+        'handlers': ['console', 'file'],
         'level': 'DEBUG',
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file'],
             'level': 'DEBUG',
             'propagate': True,
+        },
+        'django.core.mail': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
         },
     },
 }
@@ -178,11 +197,22 @@ LOGGING = {
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'nikonov.simo@gmail.com'
-EMAIL_HOST_PASSWORD = 'aaqv iatj equg gfdq'  # Нужно заменить на пароль приложения
-DEFAULT_FROM_EMAIL = 'nikonov.simo@gmail.com'
-ADMIN_EMAIL = 'nikonov.simo@gmail.com'
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = "legenda.reserv@yandex.ru"
+EMAIL_HOST_PASSWORD = "jjymoftqzwbffgii"
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+
+# Email notification settings
+DEFAULT_FROM_EMAIL = "legenda.reserv@yandex.ru"
+# ВАЖНО: Замените на ваш реальный email для получения уведомлений!
+# Например: "your-name@gmail.com" или "your-name@yandex.ru"
+ADMIN_EMAIL = "legenda.reserv@mail.ru"
+
+# Email debugging (для разработки)
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+

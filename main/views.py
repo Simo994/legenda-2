@@ -87,6 +87,9 @@ def reservation(request):
                 
                 try:
                     logger.info(f"Попытка отправки уведомления о бронировании {reservation.id}")
+                    logger.info(f"Отправка на email: {settings.ADMIN_EMAIL}")
+                    logger.info(f"Отправка с email: {settings.DEFAULT_FROM_EMAIL}")
+                    
                     send_mail(
                         subject,
                         message,
@@ -95,8 +98,12 @@ def reservation(request):
                         fail_silently=False,
                     )
                     logger.info(f"Уведомление о бронировании {reservation.id} успешно отправлено на {settings.ADMIN_EMAIL}")
+                    messages.success(request, 'Уведомление о бронировании отправлено администратору!')
                 except Exception as e:
                     logger.error(f"Ошибка при отправке уведомления о бронировании {reservation.id}: {str(e)}")
+                    logger.error(f"Тип ошибки: {type(e).__name__}")
+                    logger.error(f"Детали ошибки: {e}")
+                    messages.warning(request, 'Бронирование создано, но уведомление администратору не отправлено. Обратитесь к администратору.')
                     # Не прерываем выполнение, даже если отправка не удалась
                 
                 messages.success(request, 'Бронирование успешно создано!')
@@ -148,8 +155,10 @@ def delete_reservation(request, reservation_id):
                         [settings.ADMIN_EMAIL],
                         fail_silently=False,
                     )
+                    messages.success(request, 'Уведомление об отмене бронирования отправлено администратору!')
                 except Exception as e:
                     logger.error(f"Ошибка при отправке уведомления об отмене бронирования: {str(e)}")
+                    messages.warning(request, 'Бронирование отменено, но уведомление администратору не отправлено.')
             reservation.delete()
             messages.success(request, 'Бронирование успешно удалено!')
         except Exception as e:
@@ -175,6 +184,15 @@ def news_detail(request, news_id):
 
 def test_email(request):
     try:
+        logger.info("Начинаем тестирование отправки email")
+        logger.info(f"EMAIL_HOST: {settings.EMAIL_HOST}")
+        logger.info(f"EMAIL_PORT: {settings.EMAIL_PORT}")
+        logger.info(f"EMAIL_HOST_USER: {settings.EMAIL_HOST_USER}")
+        logger.info(f"EMAIL_USE_SSL: {settings.EMAIL_USE_SSL}")
+        logger.info(f"EMAIL_USE_TLS: {settings.EMAIL_USE_TLS}")
+        logger.info(f"DEFAULT_FROM_EMAIL: {settings.DEFAULT_FROM_EMAIL}")
+        logger.info(f"ADMIN_EMAIL: {settings.ADMIN_EMAIL}")
+        
         send_mail(
             'Тестовое письмо',
             'Это тестовое письмо для проверки настроек email.',
@@ -182,10 +200,25 @@ def test_email(request):
             [settings.ADMIN_EMAIL],
             fail_silently=False,
         )
+        logger.info("Тестовое письмо успешно отправлено")
         return JsonResponse({'status': 'success', 'message': 'Тестовое письмо отправлено'})
     except Exception as e:
         logger.error(f"Ошибка при отправке тестового письма: {str(e)}")
+        logger.error(f"Тип ошибки: {type(e).__name__}")
+        logger.error(f"Детали ошибки: {e}")
         return JsonResponse({'status': 'error', 'message': str(e)})
+
+def test_email_page(request):
+    """Страница для тестирования email настроек"""
+    context = {
+        'email_host': settings.EMAIL_HOST,
+        'email_port': settings.EMAIL_PORT,
+        'email_user': settings.EMAIL_HOST_USER,
+        'email_ssl': settings.EMAIL_USE_SSL,
+        'from_email': settings.DEFAULT_FROM_EMAIL,
+        'admin_email': settings.ADMIN_EMAIL,
+    }
+    return render(request, 'test_email.html', context)
 
 def gallery_view(request):
     photos_interior = MenuPhoto.objects.filter(category='interior').order_by('-created_at')
